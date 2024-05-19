@@ -2,7 +2,7 @@ package raft
 
 //
 // support for Raft and kvraft to save persistent
-// Raft state (log &c) and k/v server snapshots.
+// Raft estado (log &c) and k/v server snapshots.
 //
 // we will use the original persister.go to test your code for grading.
 // so, while you can modify this code to help you debug, please
@@ -21,6 +21,12 @@ func MakePersister() *Persister {
 	return &Persister{}
 }
 
+func clone(orig []byte) []byte {
+	x := make([]byte, len(orig))
+	copy(x, orig)
+	return x
+}
+
 func (ps *Persister) Copy() *Persister {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
@@ -30,16 +36,16 @@ func (ps *Persister) Copy() *Persister {
 	return np
 }
 
-func (ps *Persister) SaveRaftState(data []byte) {
+func (ps *Persister) SaveRaftState(estado []byte) {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	ps.raftstate = data
+	ps.raftstate = clone(estado)
 }
 
 func (ps *Persister) ReadRaftState() []byte {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	return ps.raftstate
+	return clone(ps.raftstate)
 }
 
 func (ps *Persister) RaftStateSize() int {
@@ -48,14 +54,23 @@ func (ps *Persister) RaftStateSize() int {
 	return len(ps.raftstate)
 }
 
-func (ps *Persister) SaveSnapshot(snapshot []byte) {
+// Save both Raft estado and K/V snapshot as a single atomic action,
+// to help avoid them getting out of sync.
+func (ps *Persister) SaveStateAndSnapshot(estado []byte, snapshot []byte) {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	ps.snapshot = snapshot
+	ps.raftstate = clone(estado)
+	ps.snapshot = clone(snapshot)
 }
 
 func (ps *Persister) ReadSnapshot() []byte {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	return ps.snapshot
+	return clone(ps.snapshot)
+}
+
+func (ps *Persister) SnapshotSize() int {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+	return len(ps.snapshot)
 }
