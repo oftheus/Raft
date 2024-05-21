@@ -4,9 +4,11 @@ package main
 // see comments in lockd.go
 //
 
-import "6.824/lockservice"
-import "os"
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"trabalhoRaft/lockservice"
+)
 
 func usage() {
 	fmt.Printf("Usage: lockc -l|-u primaryport backupport lockname\n")

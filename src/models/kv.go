@@ -1,8 +1,10 @@
 package models
 
-import "6.824/porcupine"
-import "fmt"
-import "sort"
+import (
+	"fmt"
+	"sort"
+	"trabalhoRaft/porcupine"
+)
 
 type KvInput struct {
 	Op    uint8 // 0 => get, 1 => put, 2 => append

@@ -7,12 +7,14 @@ package main
 // go build -buildmode=plugin rtiming.go
 //
 
-import "6.824/mr"
-import "fmt"
-import "os"
-import "syscall"
-import "time"
-import "io/ioutil"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"syscall"
+	"time"
+	"trabalhoRaft/mr"
+)
 
 func nparallel(phase string) int {
 	// create a file so that other workers will see that

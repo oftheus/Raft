@@ -9,10 +9,12 @@ package main
 // Please do not change this file.
 //
 
-import "6.824/mr"
-import "time"
-import "os"
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"time"
+	"trabalhoRaft/mr"
+)
 
 func main() {
 	if len(os.Args) < 2 {

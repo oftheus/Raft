@@ -1,6 +1,6 @@
 package main
 
-// export GOPATH=~/6.824
+// export GOPATH=~/trabalhoRaft
 // go build lockd.go
 // go build lockc.go
 // ./lockd -p a b &
@@ -11,10 +11,12 @@ package main
 // on Athena, use /tmp/myname-a and /tmp/myname-b
 // instead of a and b.
 
-import "time"
-import "6.824/lockservice"
-import "os"
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"time"
+	"trabalhoRaft/lockservice"
+)
 
 func main() {
 	if len(os.Args) == 4 && os.Args[1] == "-p" {

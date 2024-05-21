@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"6.824/labrpc"
+	"trabalhoRaft/labrpc"
 )
 
 type Raft struct {
@@ -69,7 +69,6 @@ chama o método Stop no objeto rf.timerEleicaoleicao, que é um timer usado para
 */
 func (rf *Raft) Kill() {
 	atomic.StoreInt32(&rf.peerMorto, 1)
-	DPrintf("O servidor %v está sendo encerrado!", rf.me)
 	rf.timerEleicao.Stop()
 }
 
@@ -91,17 +90,12 @@ func (rf *Raft) ticker() {
 	for !rf.encerrado() {
 		select {
 		case <-rf.timerEleicao.C:
-			DPrintf("O timer de eleição do servidor %v disparou", rf.me)
-
 			rf.mu.Lock()
 			rf.ReiniciarTimerEleicao()
 			if rf.estado == 2 {
 				rf.mu.Unlock()
 				break
 			}
-
-			DPrintf("O servidor %v está iniciando uma eleição", rf.me)
-
 			rf.estado = 1
 			rf.termoAtual++
 			rf.votouEm = rf.me
@@ -153,7 +147,6 @@ func (rf *Raft) ticker() {
 
 			rf.mu.Lock()
 			if rf.estado != 1 {
-				DPrintf("Servidor %v não é mais um candidato", rf.me)
 				rf.mu.Unlock()
 				return
 			}
@@ -164,17 +157,14 @@ func (rf *Raft) ticker() {
 				rf.estado = 2
 				rf.ReiniciarTimerEleicao()
 				rf.mu.Unlock()
-				DPrintf("Servidor %v ganhou a eleição para o termo %v com %v votos.", rf.me, rf.termoAtual, votoConcedido)
 				rf.enviarAppendEntradas()
 			}
 
 		case <-rf.heartbeatTicker.C:
 			rf.mu.Lock()
-			DPrintf("Servidor %v no estado %v acionou o heartbeat ticker", rf.me, rf.estado)
 			estado := rf.estado
 			rf.mu.Unlock()
 			if estado == 2 {
-				DPrintf("Líder %v heartbeatTicker tick", rf.me)
 				rf.enviarAppendEntradas()
 			}
 		}
